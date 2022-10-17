@@ -3,8 +3,25 @@ AWSTemplateFormatVersion: "2010-09-09" #optional
 Description: >
   This is my test build of AWS VPC infrastructure
 
-#Metadata:
-  #template metadata
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - 
+        Label: 
+          default: "Network Configuration"
+        Parameters: 
+          - yourVPCcidrBlock
+          - YourPublicSub1
+          - YourPrivareSub1
+      - 
+        Label: 
+          default: "Amazon EC2 Configuration"
+        Parameters: 
+          - InstanceType
+          - KeyName
+    ParameterLabels: 
+      VPCID: 
+        default: "Which VPC should this be deployed to?"
 
 Parameters:
  yourVPCcidrBlock:
@@ -92,26 +109,25 @@ Resources:
   Properties: 
    RouteTableId: !Ref myPubRT
    SubnetId: !Ref MyPublicSubnet
-   
+
  InstanceSecurityGroup:
   Type: AWS::EC2::SecurityGroup
   Properties:
-   GroupDescription: Allow http to client host
-   VpcId: Ref: myVPC
+   VpcId: !Ref MyVPC
    SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22
-        CidrIp: 0.0.0.0/0     
+    - IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+    - IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 0.0.0.0/0     
    SecurityGroupEgress:
-      - IpProtocol: tcp
-        FromPort: 0
-        ToPort: 65535
-        CidrIp: 0.0.0.0/0
+    - IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 0.0.0.0/0
 
   
   
