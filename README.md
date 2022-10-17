@@ -1,1 +1,1 @@
-# Arturo
+CloudFormation test template.
