@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: "2010-09-09" #optional
+
+Description: >
+  This is my test build of AWS VPC infrastructure
+
+#Metadata:
+  #template metadata
+
+Parameters:
+ yourVPCcidrBlock:
+  Type: String
+  Default: 10.3.0.0/16
+  Description: enter IP range for this VPC
+
+ YourPublicSub1:
+  Type: String
+  Default: 10.3.0.0/24
+  Description: enter IP range for pub subnet 1
+  
+ YourPrivareSub1:
+  Type: String
+  Default: 10.3.1.0/24
+  Description: enter IP range for priv subnet 1
+
+    
+Resources:
+ MyVPC:
+  Type: AWS::EC2::VPC
+  Properties: 
+   CidrBlock: 
+    !Ref yourVPCcidrBlock
+   EnableDnsHostnames: true
+   EnableDnsSupport: true
+   InstanceTenancy: default
+   Tags: 
+   - Key: Name
+     Value: Test VPC
+
+ MyPublicSubnet:
+  Type: AWS::EC2::Subnet
+  Properties:
+   VpcId: !Ref MyVPC
+   CidrBlock: 10.3.0.0/24
+   AvailabilityZone: "eu-west-1a"
+   MapPublicIpOnLaunch: true
+   Tags:
+   - Key: Name
+     Value: public
+
+ MyPrivateSubnet:
+  Type: AWS::EC2::Subnet
+  Properties:
+   VpcId:
+    !Ref MyVPC
+   CidrBlock: 10.3.1.0/24
+   AvailabilityZone: "eu-west-1b"
+   MapPublicIpOnLaunch: false
+   Tags:
+   - Key: Name
+     Value: private
+
+ myIGW:
+  Type: AWS::EC2::InternetGateway
+  Properties:
+   Tags:
+   - Key: Name
+     Value: test igw
+
+ Gatewayattachm:
+  Type: AWS::EC2::VPCGatewayAttachment
+  Properties: 
+   InternetGatewayId: !Ref myIGW
+   VpcId: !Ref MyVPC
+
+ myPubRT:
+  Type: AWS::EC2::RouteTable
+  Properties: 
+   Tags: 
+    - Key: Name
+      Value: my public route t
+   VpcId: !Ref MyVPC
+
+ publicRoutes:
+  Type: AWS::EC2::Route
+  Properties: 
+   DestinationCidrBlock: 0.0.0.0/0
+   GatewayId: !Ref myIGW
+   RouteTableId: !Ref myPubRT
+
+ routeAssosPub:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties: 
+   RouteTableId: !Ref myPubRT
+   SubnetId: !Ref MyPublicSubnet
+
+  
+  
+  
+
+
+               
+
+
+#Outputs:
+  #set of outputs
